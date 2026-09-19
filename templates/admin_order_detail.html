@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Details - My Store</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+
+        <h1>My Store Admin</h1>
+
+        <nav>
+            <a href="/">Store</a>
+            <a href="/admin/orders">Orders</a>
+            <a href="/admin/logout">Logout</a>
+        </nav>
+
+    </header>
+
+    <main class="admin-detail-page">
+
+        <div class="admin-detail-header">
+
+            <h2>Order #{{ order.id }}</h2>
+
+            <span class="order-status">
+                {{ order.status }}
+            </span>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Customer Information</h3>
+
+            <p>
+                <strong>Name:</strong>
+                {{ order.name }}
+            </p>
+
+            <p>
+                <strong>Address:</strong>
+                {{ order.address }}
+            </p>
+
+            <p>
+                <strong>Phone:</strong>
+                {{ order.phone }}
+            </p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Products</h3>
+
+            {% for item in order_items %}
+
+                <div class="detail-product">
+
+                    <div>
+                        <strong>{{ item.product_name }}</strong>
+
+                        <p>
+                            ₱{{ item.price }}
+                            × {{ item.quantity }}
+                        </p>
+                    </div>
+
+                    <strong>
+                        ₱{{ item.subtotal }}
+                    </strong>
+
+                </div>
+
+            {% endfor %}
+
+            <div class="detail-total">
+
+                <strong>
+                    Total: ₱{{ order.total }}
+                </strong>
+
+            </div>
+
+        </div>
+
+        <a href="/admin/orders" class="back-link">
+            ← Back to Orders
+        </a>
+
+    </main>
+
+</body>
+</html>

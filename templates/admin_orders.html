@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - My Store</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+
+        <h1>My Store Admin</h1>
+
+        <nav>
+            <a href="/">Store</a>
+            <a href="/admin/orders">Orders</a>
+            <a href="/admin/logout">Logout</a>
+        </nav>
+
+    </header>
+
+    <main class="admin-page">
+
+        <h2>Customer Orders</h2>
+
+        {% if orders %}
+
+            {% for order in orders %}
+
+                <div class="admin-order">
+
+                    <div class="admin-order-header">
+
+                        <h3>Order #{{ order.id }}</h3>
+
+                        <span class="order-status">
+                            {{ order.status }}
+                        </span>
+
+                    </div>
+
+                    <div class="customer-info">
+
+                        <p>
+                            <strong>Name:</strong>
+                            {{ order.name }}
+                        </p>
+
+                        <p>
+                            <strong>Address:</strong>
+                            {{ order.address }}
+                        </p>
+
+                        <p>
+                            <strong>Phone:</strong>
+                            {{ order.phone }}
+                        </p>
+
+                    </div>
+
+                    <h4>Products</h4>
+
+                    {% for item in order_items %}
+
+                        {% if item.order_id == order.id %}
+
+                            <div class="admin-product">
+
+                                <span>
+                                    {{ item.product_name }}
+                                    × {{ item.quantity }}
+                                </span>
+
+                                <span>
+                                    ₱{{ item.subtotal }}
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                    <div class="admin-order-footer">
+
+                        <strong>
+                            Total: ₱{{ order.total }}
+                        </strong>
+
+                        <a href="/admin/order/{{ order.id }}">
+                            View Details
+                        </a>
+
+                    </div>
+
+                    <form
+                        action="/admin/update-status/{{ order.id }}"
+                        method="POST"
+                        class="status-form"
+                    >
+
+                        <label>Update Status:</label>
+
+                        <select name="status">
+
+                            <option value="Pending"
+                                {% if order.status == "Pending" %}selected{% endif %}>
+                                Pending
+                            </option>
+
+                            <option value="Processing"
+                                {% if order.status == "Processing" %}selected{% endif %}>
+                                Processing
+                            </option>
+
+                            <option value="Shipped"
+                                {% if order.status == "Shipped" %}selected{% endif %}>
+                                Shipped
+                            </option>
+
+                            <option value="Completed"
+                                {% if order.status == "Completed" %}selected{% endif %}>
+                                Completed
+                            </option>
+
+                        </select>
+
+                        <button type="submit">
+                            Update Status
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No orders yet.</p>
+
+        {% endif %}
+
+    </main>
+
+</body>
+</html>

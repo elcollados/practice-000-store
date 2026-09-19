@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>My Store</h1>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="#">Products</a>
+            <a href="/cart">Cart</a>
+            <a href="/track-order">Track Order</a>
+        </nav>
+
+    </header>
+
+    <main>
+
+        <section class="hero">
+            <h2>Welcome to My Store</h2>
+            <p>Quality products at affordable prices.</p>
+            <button>Shop Now</button>
+        </section>
+
+        <section class="products">
+
+        {% for product in products %}
+
+    <div class="product">
+        <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+
+        <h3>{{ product.name }}</h3>
+
+        <p>₱{{ product.price }}</p>
+
+        <form action="/add-to-cart/{{ product.name }}" method="POST">
+            <button type="submit">Add to Cart</button>
+        </form>
+    </div>
+
+{% endfor %}
+            
+
+
+
+        </section>
+
+    </main>
+
+</body>
+</html>

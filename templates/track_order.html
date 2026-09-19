@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Track Order - My Store</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+
+        <h1>My Store</h1>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="#">Products</a>
+            <a href="/cart">Cart</a>
+            <a href="/track-order">Track Order</a>
+        </nav>
+
+    </header>
+
+    <main class="track-page">
+
+        <h2>Track Your Order</h2>
+
+        <form action="/track-order" method="POST" class="track-form">
+
+            <label>Order Number</label>
+
+            <input
+                type="number"
+                name="order_id"
+                placeholder="Enter your order number"
+                required
+            >
+
+            <button type="submit">
+                Track Order
+            </button>
+
+        </form>
+
+        {% if order %}
+
+            <div class="tracking-result">
+
+                <div class="tracking-header">
+
+                    <h3>Order #{{ order.id }}</h3>
+
+                    <span class="order-status">
+                        {{ order.status }}
+                    </span>
+
+                </div>
+
+                <h3>Customer Information</h3>
+
+                <p>
+                    <strong>Name:</strong>
+                    {{ order.name }}
+                </p>
+
+                <h3>Products</h3>
+
+                {% for item in order_items %}
+
+                    <div class="tracking-product">
+
+                        <span>
+                            {{ item.product_name }}
+                            × {{ item.quantity }}
+                        </span>
+
+                        <strong>
+                            ₱{{ item.subtotal }}
+                        </strong>
+
+                    </div>
+
+                {% endfor %}
+
+                <div class="tracking-total">
+
+                    <strong>
+                        Total: ₱{{ order.total }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        {% elif request.method == "POST" %}
+
+            <div class="tracking-error">
+
+                <p>Order not found.</p>
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+</body>
+</html>

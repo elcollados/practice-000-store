@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cart - My Store</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+
+        <h1>My Store</h1>
+
+        <nav>
+            <a href="/">home</a>
+            <a href="#">Products</a>
+            <a href="/cart">Cart</a>
+            <a href="/track-order">Track Order</a>
+        </nav>
+
+    </header>
+
+    <main class="cart-page">
+
+        <h2>Your Cart</h2>
+
+        {% if cart_products %}
+
+
+        <div class="cart-items">
+
+            {% for product in cart_products %}
+            
+            <div class="cart-item">
+
+                <h3>{{ product.name }}</h3>
+                <p>Price: ₱{{ product.price }} </p>
+                <p>
+                    Quantity:
+
+                    <form action="/decrease-quantity/{{ product.name }}" method="POST" style="display: inline;">
+                        <button type="submit">-</button>
+                    </form>
+
+                    {{ product.quantity }}
+
+                    <form action="/increase-quantity/{{ product.name }}" method="POST" style="display: inline;">
+                        <button type="submit">+</button>
+                    </form>
+
+                </p>
+
+                <p>Subtotal: ₱{{ product.subtotal }}</p>
+
+                <form action="/remove-from-cart/{{ product.name }}" method="POST">
+                    <button type="submit">Remove</button>
+                </form>
+
+            </div>
+        
+        {% endfor %}
+
+        </div>
+
+        <div class="cart-total">
+
+            <h2>total:  ₱{{ total }} </h2>
+
+            <a href="/checkout">
+                <button type="button">checkout</button>
+            </a>
+        </div>
+
+        {% else %}
+
+            <p>Your cart is currently empty.</p>
+
+        {% endif %}
+
+        <a href="/">Continue Shopping</a>
+
+    </main>
+
+
+
+</body>
+</html>
