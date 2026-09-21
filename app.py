@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from werkzeug.security import check_password_hash
 import sqlite3
 import os
+import psycopg2
+from psycopg2.extras import DictCursor
 
 load_dotenv()
 
@@ -11,27 +13,35 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 def get_db():
+    database_url = os.getenv("DATABASE_URL")
+
+    if database_url:
+        conn = psycopg2.connect(database_url,cursor_factory=DictCursor
+        )
+        return conn
+
     conn = sqlite3.connect("store.db")
     conn.row_factory = sqlite3.Row
     return conn
 
 def create_tables():
-
     conn = get_db()
+    cursor = conn.cursor()
 
-    conn.execute("""
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS orders (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         address TEXT NOT NULL,
         phone TEXT NOT NULL,
-        total REAL NOT NULL
+        total REAL NOT NULL,
+        status TEXT DEFAULT 'Pending'
     )
     """)
 
-    conn.execute("""
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS order_items (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         order_id INTEGER NOT NULL,
         product_name TEXT NOT NULL,
         price REAL NOT NULL,
@@ -39,13 +49,6 @@ def create_tables():
         subtotal REAL NOT NULL
     )
     """)
-
-    try:
-        conn.execute(
-            "ALTER TABLE orders ADD COLUMN status TEXT DEFAULT'Pending'"
-        )
-    except sqlite3.OperationalError:
-        pass
 
     conn.commit()
     conn.close()
@@ -241,24 +244,27 @@ def place_order():
         total += product["subtotal"]
 
     conn = get_db()
+    cursor = conn.cursor()
 
-    cursor = conn.execute(
+    cursor.execute(
         """
         INSERT INTO orders (name, address, phone, total)
-        VALUES(?, ?, ?, ?)
+        VALUES(%s, %s, %s, %s)
+        RETURNING id
         """,
         (name, address, phone, total)
     )
 
-    order_id = cursor.lastrowid
+    order_id = cursor.fetchone()[0]
+
 
     for product in cart_products:
 
-        conn.execute(
+        cursor.execute(
             """
             INSERT INTO order_items
             (order_id, product_name, price, quantity, subtotal)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s)
             """,
             (
                 order_id,
@@ -293,22 +299,26 @@ def track_order():
     order_items = []
 
     if request.method == "POST":
-
         order_id = request.form["order_id"]
 
         conn = get_db()
+        cursor = conn.cursor()
 
-        order = conn.execute(
-            "SELECT * FROM orders WHERE id = ?",
+        cursor.execute(
+            "SELECT * FROM orders WHERE id = %s",
             (order_id,)
-        ).fetchone()
+        )
+        order = cursor.fetchone()
 
         if order:
-            order_items = conn.execute(
-                "SELECT * FROM order_items WHERE order_id = ?",
+            cursor.execute(
+                "SELECT * FROM order_items WHERE order_id = %s",
                 (order_id,)
-            ).fetchall()
+            )
 
+            order_items = cursor.fetchall()
+
+        cursor.close()
         conn.close()
 
     return render_template(
@@ -350,15 +360,19 @@ def admin_orders():
         return redirect("/admin/login")
 
     conn = get_db()
+    cursor = conn.cursor()
 
-    orders = conn.execute(
+    cursor.execute(
         "SELECT * FROM orders ORDER BY id DESC"
-    ).fetchall()
+    )
+    orders = cursor.fetchall()
 
-    order_items = conn.execute(
+    cursor.execute(
         "SELECT * FROM order_items"
-    ).fetchall()
+    )
+    order_items = cursor.fetchall()
 
+    cursor.close()
     conn.close()
 
     return render_template(
@@ -376,17 +390,21 @@ def admin_order_detail(order_id):
         return redirect("/admin/login")
 
     conn = get_db()
+    cursor = conn.cursor()
 
-    order = conn.execute(
-        "SELECT * FROM orders WHERE id = ?",
+    cursor.execute(
+        "SELECT * FROM orders WHERE id = %s",
         (order_id,)
-    ).fetchone()
+    )
+    order = cursor.fetchone()
 
-    order_items = conn.execute(
-        "SELECT * FROM order_items WHERE order_id = ?",
+    cursor.execute(
+        "SELECT * FROM order_items WHERE order_id = %s",
         (order_id,)
-    ).fetchall()
+    )
+    order_items = cursor.fetchall()
 
+    cursor.close()
     conn.close()
 
     if order is None:
@@ -409,13 +427,15 @@ def update_status(order_id):
     status = request.form["status"]
 
     conn = get_db()
+    cursor = conn.cursor()
 
-    conn.execute(
-        "UPDATE orders SET status = ? WHERE id = ?",
+    cursor.execute(
+        "UPDATE orders SET status = %s WHERE id = %s",
         (status, order_id)
     )
 
     conn.commit()
+    cursor.close()
     conn.close()
 
     return redirect("/admin/orders")
