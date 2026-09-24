@@ -12,7 +12,6 @@
 
         <nav>
             <a href="/">Home</a>
-            <a href="#">Products</a>
             <a href="/cart">Cart</a>
             <a href="/track-order">Track Order</a>
         </nav>
@@ -24,21 +23,36 @@
         <section class="hero">
             <h2>Welcome to My Store</h2>
             <p>Quality products at affordable prices.</p>
-            <button>Shop Now</button>
+            <a href="#products">Shop Now</a>
         </section>
 
-        <section class="products">
+        <section class="products" id="products">
 
         {% for product in products %}
 
     <div class="product">
-        <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
 
-        <h3>{{ product.name }}</h3>
+        <a href="{{ url_for('product_detail', product_id=product.id) }}">
+            <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+        </a>
+
+        <h3>
+            <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                {{ product.name }}
+            </a>
+        </h3>
 
         <p>₱{{ product.price }}</p>
 
-        <form action="/add-to-cart/{{ product.name }}" method="POST">
+        <a 
+            href="{{ url_for('product_detail', product_id=product.id) }}"
+            class="view-product"
+        >
+            View Product
+        </a>
+
+        <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit">Add to Cart</button>
         </form>
     </div>

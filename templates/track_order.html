@@ -14,7 +14,6 @@
 
         <nav>
             <a href="/">Home</a>
-            <a href="#">Products</a>
             <a href="/cart">Cart</a>
             <a href="/track-order">Track Order</a>
         </nav>
@@ -26,6 +25,7 @@
         <h2>Track Your Order</h2>
 
         <form action="/track-order" method="POST" class="track-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <label>Order Number</label>
 
@@ -33,6 +33,15 @@
                 type="number"
                 name="order_id"
                 placeholder="Enter your order number"
+                required
+            >
+
+            <label>Phone Number Used at Checkout</label>
+
+            <input
+                type="text"
+                name="phone"
+                placeholder="Enter the phone number from your order"
                 required
             >
 
@@ -96,7 +105,7 @@
 
             <div class="tracking-error">
 
-                <p>Order not found.</p>
+                <p>Order not found. Please check your order number and phone number.</p>
 
             </div>
 
