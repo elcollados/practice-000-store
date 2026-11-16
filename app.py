@@ -9,7 +9,6 @@ from psycopg2.extras import DictCursor
 
 load_dotenv()
 
-
 app = Flask(__name__)
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -29,10 +28,10 @@ if not ADMIN_USERNAME or not ADMIN_PASSWORD_HASH:
 
 app.secret_key = SECRET_KEY
 
-# Set FLASK_DEBUG=1 locally only. Never enable debug mode in production.
+
 DEBUG_MODE = os.getenv("FLASK_DEBUG", "0") == "1"
 
-# CSRF protection for every POST form in the app
+
 csrf = CSRFProtect(app)
 
 
@@ -64,9 +63,6 @@ def create_tables():
 
     database_url = os.getenv("DATABASE_URL")
 
-    # SQLite does not recognize "SERIAL" as a type. For a column to
-    # auto-increment in SQLite it must be declared exactly as
-    # "INTEGER PRIMARY KEY" -- otherwise inserted rows get id = NULL.
     if database_url:
         id_column = "id SERIAL PRIMARY KEY"
     else:
@@ -115,9 +111,7 @@ def create_tables():
         ()
     )
 
-    # Seed default products only if the table is empty, so re-deploys
-    # don't wipe out products the client has since edited.
-    execute_query(cursor, "SELECT COUNT(*) AS count FROM products", ())
+    execute_query(cursor, "SELECT COUNT(*) AS count  FROM products", ())
     count = cursor.fetchone()["count"]
 
     if count == 0:
@@ -354,7 +348,7 @@ def place_order():
     database_url = os.getenv("DATABASE_URL")
 
     if database_url:
-        # Postgres: RETURNING works reliably
+        
         execute_query(
             cursor,
             """
@@ -366,7 +360,7 @@ def place_order():
         )
         order_id = cursor.fetchone()["id"]
     else:
-        # SQLite: RETURNING needs SQLite 3.35+/Python 3.11+, so use lastrowid instead
+        
         execute_query(
             cursor,
             """
@@ -424,9 +418,7 @@ def track_order():
         conn = get_db()
         cursor = conn.cursor()
 
-        # Require the phone number on the order to match, so order IDs
-        # alone (which are sequential/guessable) can't be used to view
-        # someone else's name, address, and phone number.
+        
         execute_query(
             cursor,
             "SELECT * FROM orders WHERE id = ? AND phone = ?",
