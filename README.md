@@ -21,32 +21,15 @@ Live demo: https://store-website-2niw.onrender.com
 - HTML / Jinja templates
 - Deployed on Render
 
-## How to Run Locally
+## How to run
 
-1. Clone the project:
-   ```
-   git clone https://github.com/elcollados/Store-website.git
-   cd Store-website
-   ``` 
-2. Install the packages:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Create a `.env` file:
-   ```
-   SECRET_KEY=your-secret-key
-   ADMIN_USERNAME=admin
-   ADMIN_PASSWORD_HASH=your-password-hash
-   ```
-4. Make a password hash:
-   ```
-   python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('yourpassword'))"
-   ```
-5. Run the app:
-   ```
-   python app.py
-   ```
+1. Clone the project: `git clone https://github.com/elcollados/practice-000-store.git`
+2. Go into the folder: `cd practice-000-store`
+3. Install packages: `pip install -r requirements.txt`
+4. Create a `.env` file with: `SECRET_KEY=<any long random text>`
+5. Run: `python app.py`
 6. Open `http://127.0.0.1:5000`
+
 
 If `DATABASE_URL` is set, the app uses PostgreSQL. If not, it uses a local SQLite file (`store.db`).
 
@@ -54,8 +37,16 @@ If `DATABASE_URL` is set, the app uses PostgreSQL. If not, it uses a local SQLit
 
 - Most of the code was written with AI assistance (ChatGPT and Claude).
 - I retyped the code myself and studied how each part works, as for me to experience the process of building live website.
-- What I did myself: [deploying to Render, setting up GitHub, testing, fixing ..., changing ...].
-- What I am still learning: [SQL queries, sessions, PostgreSQL vs SQLite].
+- What I am still learning: [SQL queries, sessions, security, database, PostgreSQL and SQLite].
 
 ## Learning notes
 See [LEARNING.md](LEARNING.md) for what I learned while building this project, I still have a lot of needs to learn, I only added the new word codes that I used in this project.
+
+## Status
+Work in progress. Not finished yet.
+
+## Screenshots
+
+![Home page](screenshot/Home.png)
+![Cart](screenshot/cart.png)
+![Checkout](screenshot/track.png)
