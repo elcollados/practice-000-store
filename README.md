@@ -6,7 +6,7 @@ Live demo: https://store-website-2niw.onrender.com
 
 ## Features
 
- Product list and product detail pages
+- Product list and product detail pages
 - Shopping cart (add, remove, increase, decrease, clear)
 - Checkout and order placement
 - Order tracking with order ID and phone number
@@ -35,9 +35,9 @@ If `DATABASE_URL` is set, the app uses PostgreSQL. If not, it uses a local SQLit
 
 ## How This Was Built
 
-- Most of the code was written with AI assistance (ChatGPT and Claude).
-- I retyped the code myself and studied how each part works, as for me to experience the process of building live website.
-- What I am still learning: [SQL queries, sessions, security, database, PostgreSQL and SQLite].
+- Most of the code was written with AI help (ChatGPT and Claude).
+- I retyped the code myself and studied how it works.
+- I tested it, fixed errors, and deployed it.
 
 ## Learning notes
 See [LEARNING.md](LEARNING.md) for what I learned while building this project, I still have a lot of needs to learn, I only added the new word codes that I used in this project.
